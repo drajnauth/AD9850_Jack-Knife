@@ -1,0 +1,129 @@
+VE3OOI AD9850 Controller Arduino Program
+
+
+This document describes the AD9850 controller program written by Dave Rajnuth, VE3OOI.
+
+The controller program is an experimentation and demonstration program to learn about the AD9850 Module widely available on eBay.  The program uses a custom written set of AD9850 routines as part of the distribution. These routines are well documented such that anyone wishing to experiment with developing code for the AD9850 will understand its operation.
+
+Program Features
+
+1) Set frequency on each clock output from 1 MHz to 40 MHz.  I have found that frequencies outside of this range tend not to be stable
+2) Ability to sweep between two frequencies in any increment with a programmable delay
+3) Calibrate the AD9850 module compensate for the Crystal Oscillator frequency 
+4) Change the Phase of output on the fly (experimental at this time)
+
+With this controller program, at minimum, you have a versatile signal generator at your disposal or a tool to experiment with the AD9850 to understand its capabilities and programming.
+
+
+Requirements:
+
+1. Your Arduino must be configured in the Arduino IDE.  For example, you should be able to load, compile and run the blink.ino sketch which is located within the examples (basics).
+
+2. You must know how to load a sketch (program) into the Arduino.  There are numerous videos and documentation how to do this.
+
+3. The Arduino must be connected to the AD9850 and working!  You can use any digital pin to communicate with the AD9850.  The “AD9850_v1.h” file has a set of #defines to configure the pins. You can change these.
+
+4. The Arduino MUST have EEPROM memory. Majority of Arduino have EEPROM and you should be ok.  If you get a EEPROM error message when loading the software, this means you have an arduino without EEPROM memory.  You can verify if you Adruino has EEPROM by looking at the spec sheet for your Arduino on the Arduino website.
+
+It is possible to compile on a Arduino WITHOUT EEPROM memory.  You will need to remove the calls to read/write eeprom and hard code correction/calibration values into the program.
+
+5. This program using a TTY (Serial Interface) where DOS/UNIX style commands are entered to configure the AD9850. The Serial Monitor tool that is part of the Arduino IDE can be used.  You can use any other serial TTY  program such as HyperTerm.  The requirements are:
+i. 9600 Baud
+ii. The Carrage Return and Line Feed (CR/LF) is enabled. The program needs to detect when you press the Enter key by looking for CR/LF.
+iii. Your TTY program is connected to the COM port associated with the Arduino
+
+6. Note that the AD9850 is a current source. Don’t assume its 50R output impendence.    The output drive current is set by the Rset pins which has been prewired on the Module.  Some modules have a jumper where you can control the output drive level.  
+Note: The datasheet has a diagram showing a 3.9K resistor connected to Rset (10mA output)  and if a 50R resistor is connected to the output as a shunt, its 50R output impedance.
+
+
+Installation:
+
+1. All files must be stored in a folder with the same name as the .ino file. For example, if the .ino file is “VE3OOI_AD9850_Controller_v1.0.ino" then all files must be located in a directory named "VE3OOI_AD9850_Controller_v1.0" otherwise the program will not load or compile.
+
+2.  The program requires that EEPROM library be installed.  This should be part of your Arduino install.  For more information see https://www.arduino.cc/en/Reference/EEPROM
+
+3. Once you have the program in the correct folder, open it.  Make sure the hardware is connected according to the pin definitions in “AD9850_v1.h” (You can change these).  Press the upload button.
+
+Usage:
+
+Once you have a serial connection to the Arduino you should see the banner “VE3OOI AD9850 Controller v1.0” followed by a “RDY>” prompt. If you don't see this prompt then you are connected to the wrong COM port or have the incorrect baud rate defined.
+
+When you press Enter, you should see “Err” displayed meaning an unrecognized command was entered.
+
+All commands are single alphabetic characters following by one or more numbers. Commands are case insensitive. That is, “A” is the same as “a”. It does not matter which you type.
+
+There is a help screen that shows all available commands with usage information.  Press “h” followed by Enter. The following should be displayed:
+RDY> h
+C - Disp Calib
+     \tE.g. C
+C [CAL] [HZ] - Set Calib for HZ on all Channels
+      \tE.g. C 100 10000000
+D - Power down the module
+      \tE.g. D
+F [n] - Set Freq n and Phase 0
+      \tE.g. F 10000000
+S [S] [E] [I] [delay]- Sweep Start to End with Increment with delay ms on all Channels
+      \tE.g. S 7000000 73000000 100
+P [n] [m] - Set Freq n with phase m (experimental)
+R - Reset
+
+RDY> 
+
+Summary of commands are:
+
+“R” is used to reset the AD9850 module. It zeros all variables and reset all AD9850 module.  
+
+“C” is used to see or change the calibration value that is stored in the Arduino EEPROM. Entering C without any other arguments will show the current calibration.  A sample output is below:
+RDY> c
+Correction: 111
+
+RDY> 
+
+If you want to define a calibration value, you enter “C” followed by the calibration number and a frequency. The frequency is used to measure and calibrate. The example below set the calibration value to 111 and then outputs a frequency of 10 MHz.
+RDY> c 111 10000000
+Old Correction: 111
+New Correction: 111
+
+RDY>
+
+“F” is used to configure a quick and simple frequency output.   The example below shows how to configure a frequency of 30 MHz 
+RDY> f  30000000
+
+RDY> 
+
+“S” is used to sweep frequencies. The program will configure the starting frequency and then after a specified delay, increment the frequency by the specified amount and continue doing this to the ending frequency.  The first and second arguments are the start and stop frequency, the third argument is the increment and the final argument is the delay in ms (milliseconds). The example below is for a sweep between 7 MHz to 7.002 MHz with increment of 100 Hz and a pause (delay) of 100 ms
+RDY> s 7000000 7002000 100 100
+Ch 0 - Sweep Freq: 7000000 to: 7002000 Inc: 100
+7000000
+7000100
+7000200
+7000300
+7000400
+7000500
+7000600
+7000700
+7000800
+7000900
+7001000
+7001100
+7001200
+7001300
+7001400
+7001500
+7001600
+7001700
+7001800
+7001900
+7002000
+
+RDY>
+
+“D” is used to power down the module.  The decay of the signal is slower that a hard module reset.  This could be used to damp the output (e.g. reduce keyclicks)
+RDY> d 
+
+RDY> 
+
+
+“P” is used to display or change the phase.  It’s a work in progress.  
+
+
