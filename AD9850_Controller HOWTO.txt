@@ -55,7 +55,11 @@ All commands are single alphabetic characters following by one or more numbers. 
 
 There is a help screen that shows all available commands with usage information.  Press “h” followed by Enter. The following should be displayed:
 RDY> h
+<<<<<<< HEAD
 C - Disp Calib
+=======
+      C - Disp Calib
+>>>>>>> origin/master
       E.g. C
 C [CAL] [F] - Set Calib for Freq F
       E.g. C 100 10000000
@@ -169,17 +173,29 @@ RDY> t 7101000 16 50
 
 
 
+<<<<<<< HEAD
 Example: Listen to PSK Idle 
 
 The example below allows you to hear the phase shifts by generating PSK Idle. To see phase shifts on a scope is difficult unless you can capture the phase transition.  For this example, you will tune your HF radio to a frequency say 7100000 Hz USB and generate a test PSK signal at 7101000 Hz.  Both need to be 1000 Hz apart so that you can hear a 1000 Hz tone from the radio.   
+=======
+Example
+
+The example below allows you to hear the phase shifts. To see phase shifts on a scope is difficult unless you can capture the phase transition.  For this example, you will tune your HF radio to a frequency say 7100000 Hz USB and generate a test PSK signal at 7101000 Hz.  Both need to be 1000 Hz apart so that you can hear a 1000 Hz tone from the radio.   
+>>>>>>> origin/master
 1. Connect a insulated wire from your rigs antenna port to run near the AD9850 – DO NOT CONNECT ANTENNA DIRECTLY TO AD9850. 
 2. Tune the radio to 7100000 and USB
 3. Enter the following command on the Arduino 
 RDY> t 7101000 16 20 
 
 4. Repeat for different values of phase (e.g. 0, 45, 90 degrees)
+<<<<<<< HEAD
 RDY> t 7101000 0 20
 RDY> t 7101000 4 20
 RDY> t 7101000 8 20
+=======
+   RDY> t 7101000 0 20
+   RDY> t 7101000 4 20
+   RDY> t 7101000 8 20
+>>>>>>> origin/master
 
 
