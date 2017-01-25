@@ -243,7 +243,7 @@ void ExecuteSerial (char *str)
         break;
       }
       if (numbers[2] > 100) {
-        Serial.println ("Bad Phase");
+        Serial.println ("Bad Duration");
         break;
       } else if (!numbers[2]) {
         numbers[2] = 30;
